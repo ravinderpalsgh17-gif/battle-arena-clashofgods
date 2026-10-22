@@ -93,7 +93,7 @@ The game features **5 distinct combatants**, starting with the default free char
   * Combo Bonuses: Up to **+200 Points** for high hit chains.
   * Time Bonus: Bonus points for finishing rounds fast.
 * **Persistent Save**: Points, unlocked deities, and match records are saved automatically to `localStorage`.
-* **Testing / Bonus**: Click the `+` icon next to the points display at the top of the screen to quickly test character unlocks.
+* **Fair Economy**: Points are earned strictly through skill in combat, tournament ladders, and combo execution (no cheat exploits).
 
 ---
 

@@ -21,32 +21,56 @@
     user-select: none;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background: #050508;
     color: #e2e8f0;
     font-family: var(--font-body);
     font-weight: 700;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
+    padding: 15px 10px 60px 10px;
+}
+
+/* Custom Smooth Glowing Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: #0a0a14;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--cyan), var(--purple));
+    border-radius: 6px;
+    border: 2px solid #0a0a14;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--crimson), var(--gold));
 }
 
 /* Screen Wrapper & Letterboxing */
 #gameContainer {
     position: relative;
     width: 1280px;
-    height: 720px;
-    max-width: 100vw;
-    max-height: 100vh;
+    min-height: 720px;
+    max-width: 98vw;
     aspect-ratio: 16 / 9;
     box-shadow: 0 0 60px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 0, 85, 0.2);
     overflow: hidden;
     background: #000;
-    border-radius: 6px;
-    border: 2px solid #222;
+    border-radius: 8px;
+    border: 2px solid #2a2a44;
+    margin: 0 auto;
 }
 
 canvas#gameCanvas {
@@ -55,7 +79,7 @@ canvas#gameCanvas {
     display: block;
 }
 
-/* UI Overlay Layer */
+/* UI Overlay Layer with Internal Scroll Support */
 .ui-screen {
     position: absolute;
     top: 0;
@@ -70,6 +94,9 @@ canvas#gameCanvas {
     backdrop-filter: blur(8px);
     transition: opacity 0.3s ease, visibility 0.3s ease;
     z-index: 100;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
 }
 
 .hidden {
@@ -92,33 +119,18 @@ canvas#gameCanvas {
 }
 
 .points-pill {
-    background: rgba(20, 20, 36, 0.9);
+    background: rgba(20, 20, 36, 0.95);
     border: 2px solid var(--gold);
     color: var(--gold);
-    padding: 8px 18px;
+    padding: 8px 22px;
     border-radius: 30px;
-    font-size: 18px;
+    font-size: 19px;
+    font-weight: 900;
     display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.25);
-}
-
-.btn-add-points {
-    background: var(--gold);
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-weight: 900;
-    cursor: pointer;
-    line-height: 24px;
-    transition: transform 0.15s;
-}
-
-.btn-add-points:hover {
-    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    letter-spacing: 1px;
 }
 
 /* Main Menu Screen */
@@ -305,7 +317,10 @@ canvas#gameCanvas {
     padding: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 15px;
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .preview-header h2 {
@@ -508,4 +523,265 @@ canvas#gameCanvas {
     color: #aaa;
     display: flex;
     gap: 15px;
+}
+
+/* Scroll Hint Bar */
+.scroll-hint {
+    margin: 25px auto 10px auto;
+    color: var(--cyan);
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    animation: bounceUpDown 2s infinite ease-in-out;
+    text-align: center;
+}
+
+@keyframes bounceUpDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+}
+
+/* Full Details & Lore Section Below Arena */
+.details-section {
+    width: 100%;
+    max-width: 1280px;
+    margin: 30px auto 40px auto;
+    padding: 0 15px;
+}
+
+.details-container {
+    background: rgba(14, 14, 24, 0.95);
+    border: 2px solid #2a2a44;
+    border-radius: 12px;
+    padding: 35px 30px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 229, 255, 0.1);
+}
+
+.details-header {
+    text-align: center;
+    margin-bottom: 35px;
+    border-bottom: 2px solid #2a2a44;
+    padding-bottom: 20px;
+}
+
+.details-header h2 {
+    font-family: var(--font-heading);
+    font-size: 36px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    margin-bottom: 10px;
+}
+
+.details-header p {
+    color: #a0aec0;
+    font-size: 17px;
+    letter-spacing: 1px;
+}
+
+/* Character Detailed Cards Grid */
+.characters-detailed-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.fighter-detail-card {
+    background: rgba(20, 20, 36, 0.9);
+    border: 1px solid #2e2e4a;
+    border-top: 5px solid var(--crimson);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fighter-detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.fighter-detail-header {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.fighter-detail-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+.fighter-detail-header h3 {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+.fighter-detail-subtitle {
+    color: var(--gold);
+    font-size: 15px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.fighter-detail-lore {
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Moves Table */
+.moves-table-wrapper {
+    overflow-x: auto;
+    margin: 15px 0;
+    border-radius: 6px;
+    border: 1px solid #2e2e4a;
+}
+
+.moves-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.moves-table th {
+    background: rgba(10, 10, 20, 0.85);
+    color: var(--cyan);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #2e2e4a;
+}
+
+.moves-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #1f1f33;
+    color: #e2e8f0;
+}
+
+.moves-table tr:nth-child(even) {
+    background: rgba(15, 15, 28, 0.4);
+}
+
+.moves-table tr.ultimate-row {
+    background: rgba(255, 0, 85, 0.08);
+}
+
+.moves-table tr.ultimate-row td {
+    color: #ff99bb;
+}
+
+kbd {
+    background: #252538;
+    color: #fff;
+    border: 1px solid #4a4a68;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 0 #151522;
+}
+
+.fighter-passive-box {
+    background: rgba(10, 10, 20, 0.6);
+    border-left: 3px solid var(--gold);
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #f1f5f9;
+    border-radius: 0 6px 6px 0;
+}
+
+/* Information Columns (Economy & Controls) */
+.info-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-top: 35px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: rgba(20, 20, 36, 0.85);
+    border: 1px solid #2a2a44;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.info-card h4 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 15px;
+    border-bottom: 1px solid #2a2a44;
+    padding-bottom: 10px;
+}
+
+.info-card p {
+    color: #cbd5e1;
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+.info-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-card ul li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.info-card ul li::before {
+    content: "⚡";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 12px;
+    color: var(--cyan);
+}
+
+.controls-guide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.controls-guide-table th, .controls-guide-table td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a44;
+}
+
+.controls-guide-table th {
+    background: rgba(10, 10, 20, 0.7);
+    color: var(--cyan);
+}
+
+.details-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #2a2a44;
+}
+
+@media (max-width: 900px) {
+    .info-columns {
+        grid-template-columns: 1fr;
+    }
 }

@@ -354,7 +354,7 @@ class StorageManager {
 
     static load() {
         const defaultData = {
-            points: 500, // Starter bonus points!
+            points: 0,
             unlocked: ['yuji'],
             battlesWon: 0,
             battlesLost: 0,

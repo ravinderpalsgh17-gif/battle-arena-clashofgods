@@ -67,18 +67,6 @@ class UIManager {
             this.moveListModal.classList.add('hidden');
         });
 
-        // Add Points Bonus (For Testing & Player Reward)
-        document.querySelectorAll('.btn-add-points').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                Sound.playUnlock();
-                StorageManager.addPoints(1000);
-                this.updatePointsDisplay();
-                this.renderCharCards();
-                this.renderShopCards();
-            });
-        });
-
         // Audio Mute Toggle
         document.getElementById('btnToggleMute')?.addEventListener('click', () => {
             const muted = Sound.toggleMute();

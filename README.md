@@ -1,123 +1,100 @@
-﻿# ⚔️ Battle Arena: Clash of Gods
+# ⚔️ Battle Arena: Clash of Sorcerors — 3D Open World Edition
 
-An adrenaline-pumping 2D fighting arena game featuring mythological and cursed deities battling for cosmic supremacy. Built with pure HTML5 Canvas, modern JavaScript (ES6+), procedural Web Audio synthesis, and dynamic particle systems.
-
----
-
-## 🎮 Playable Characters & Unique Combat Kits
-
-The game features **5 distinct combatants**, starting with the default free character **Yuji**, while the remaining four gods can be unlocked using in-game battle points earned from victories, combos, and tournament runs.
-
-### 1. 🥊 Yuji Itadori — *The Divine Vessel* (FREE / Default)
-> Superhuman martial artist channeling lethal divergent cursed energy.
-* **Basic Attack (`J` / `Z`)**: **Divergent Fist** — Heavy martial strike followed a fraction of a second later by a delayed cursed shockwave that detonates for bonus burst damage and knockback.
-* **Skill 1 (`K` / `X`)**: **Cursed Rush** — High-speed blur dash delivering a rapid-fire 4-punch combo.
-* **Skill 2 (`L` / `C`)**: **Slaughter Demon** — Forward aerial somersault knife carving that inflicts bleeding.
-* **Ultimate (`U` / `V`)**: **Black Flash (Kokusen)** — Warps space within 0.000001 seconds, generating jagged black and crimson lightning for an earth-shattering critical blow (2.5x damage + screen shake).
-* **Passive — *Unbreakable Resolve***: When health drops below 35%, automatically gains +30% armor damage reduction and +20% movement speed.
+An adrenaline-pumping **3D Open World fighting arena game** featuring 16 legendary characters from **Jujutsu Kaisen**, ranked and balanced according to their canonical power levels, grades, and domain expansions. Built with **Three.js (WebGL 3D)**, hardware-accelerated procedural 3D character rigging, vast open-world environments, procedural Web Audio synthesis, and dynamic combat camera tracking.
 
 ---
 
-### 2. ⚡ Zeus — *Lord of Olympus* (1,000 Points)
-> Supreme Greek sky father commanding piercing lightning and divine thunderbolts.
-* **Basic Attack (`J` / `Z`)**: **Thunder Lance** — Hurls a piercing bolt of lightning across the entire screen.
-* **Skill 1 (`K` / `X`)**: **Chain Spark** — Discharges a homing electrical orb that seeks out and stuns the opponent.
-* **Skill 2 (`L` / `C`)**: **Aegis Storm** — Surrounds Zeus in a 360-degree rotating electrical cyclone that deflects projectiles and electrocutes rushers.
-* **Ultimate (`U` / `V`)**: **Wrath of Olympus** — Calls down 5 consecutive titanic thunderbolts that crash across the arena.
-* **Passive — *Static Overcharge***: Every 4th attack inflicts a temporary paralyzing stun.
+## 🌟 Key 3D Features
+
+### 🥋 Full 3D Characters with Procedural Anime Rigs
+Every character in the 16-sorcerer roster is fully modeled and animated in 3D with distinct anime cel-shaded aesthetics, signature accessories, and hierarchical skeletal rigging:
+* **Satoru Gojo**: 3D spiky white hair, blindfold (reveals Six Eyes during ultimate), shimmering translucent **Infinity Barrier sphere**, and rotating 3D **Lapse Blue** & **Reversal Red** energy orbs!
+* **Ryomen Sukuna**: True Heian Era form with **4 fully articulated muscular arms**, demonic right-side facial carapace mask, **4 glowing crimson eyes**, black cursed tattoos across chest and all 4 arms, black clawed fingers, open kimono with textured obi, and the Enmaten domain mudra!
+* **Yuji Itadori**: Athletic dark uniform with folded red hood, facial slit scars, and glowing pink Divergent Fist cursed knuckle trails!
+* **Nobara Kugisaki**: Steel carpenter's claw hammer with wooden grip and flying 3D cursed nails!
+* **Megumi Fushiguro**: Spiky sea-urchin hair, shadow puppet hand stances, and summoned 3D **Divine Dog (Totality)** shadow wolf companion!
+* **Panda**: Giant 3D panda bear model with ears, snout, black eye patches, and brass knuckle armbands!
+* **Kento Nanami**: Tan double-breasted suit, spotted blue tie, wire sunglasses, and 7:3 spotted cloth wrapped cleaver blade!
+* **Toji Fushiguro**: Muscular physique in black compression shirt, coiled 3D **Cursed Spirit inventory worm** draped over shoulder, and the **Inverted Spear of Heaven**!
+* **Aoi Todo**: Towering physique, samurai topknot hair, diagonal facial scar, and clapping stance!
+* **Jogo**: Hunched cursed spirit robe, cyclops eye, and cone volcano chimney head spewing glowing molten lava and smoke!
+* **Mahito**: Patchwork stitched skin, long grey twin-tail hair, and arm morphing into a curved 3D scythe blade!
+* **Kinji Hakari**: Pompadour hairstyle, pachinko shutter doors, and prismatic Jackpot fever glow!
+* **Suguru Geto**: Buddhist monk kesa robes, sweeping side fringe, and floating black/purple Uzumaki cursed sphere!
+* **Yuta Okkotsu**: White Jujutsu High jacket, katana with scabbard, silver engagement ring, and the spectral Queen of Curses (Rika)!
+* **Maki Zen'in**: Dark green high ponytail, glasses, and Dragon-Bone naginata spear!
+* **Choso**: Dual twintails, dark blood stripe on nose bridge, and floating crimson blood convergence droplets!
+
+### 🌍 Expansive 3D Open World Battleground
+Fight across a continuous 3D open-world environment featuring distinct landmarks and zones:
+1. **Central Sorcerer Grand Ring**: Paved stone arena circle with golden boundary and four-pointed Jujutsu arcane emblem.
+2. **Jujutsu High Courtyard**: Massive scarlet Torii gates, glowing stone lanterns (*toro*), blooming Cherry Blossom (*sakura*) trees with drifting petals, and traditional dojo pagoda pavilions.
+3. **Shinjuku Urban District**: Multi-story modern skyscrapers with illuminated window grids, asphalt streets with painted road lines, crosswalks, traffic barriers, and street lampposts with dynamic point lights.
+4. **Shibuya Cursed Crater Ruins**: Blasted circular crater with glowing purple cursed fissure lines and shattered concrete slabs.
+5. **Distant Tokyo Skyline**: Silhouetted skyscrapers along the perimeter horizon under an expansive starry sky dome with real-time shadow casting (`PCFSoftShadowMap`).
+
+### 🌌 Live 3D Domain Expansions
+When sorcerers unleash their Domain Expansions, the open world dynamically transforms in real-time:
+* **Unlimited Void (Satoru Gojo)**: The world shifts into a cosmic starfield dome with deep blue celestial nebulae, orbiting gravitational rings, and an abyssal singularity.
+* **Malevolent Shrine (Ryomen Sukuna)**: The sky turns blood-red, a crimson blood pool blankets the ground, and a giant horned demonic skull pagoda rises from the earth with floating dimensional cleave cuts.
+* **Chimera Shadow Garden (Megumi Fushiguro)**: The earth melts into an abyssal shadow liquid pool with reaching shadow claws.
+* **Coffin of the Iron Mountain (Jogo)**: The battlefield transforms into an active volcanic caldera with molten lava cracks and fiery rock spires.
+
+### 🎥 Dynamic 3D Combat Camera System
+Toggle between 3 distinct camera modes at any time with the `V` key or top-bar button:
+1. **Action Orbit Cam (Default)**: Cinematic camera dynamically tracking the midpoint between both fighters in 3D space, intelligently zooming in during close melee combat and pulling back when fighters separate across the open arena.
+2. **Third-Person Cam (Follow)**: Over-the-shoulder action RPG perspective following behind Player 1.
+3. **Overview Cam (Bird's Eye)**: High-angle aerial view for tactical arena positioning.
+* Features responsive camera shake during heavy hits, Black Flash critical strikes, and Domain Expansions!
 
 ---
 
-### 3. 🐺 Anubis — *Judge of Souls* (2,200 Points)
-> Jackal-headed Egyptian deity of the Underworld and guardian of the Scales of Ma'at.
-* **Basic Attack (`J` / `Z`)**: **Soul Siphon** — Fires a ghostly jackal skull that absorbs enemy life force and heals Anubis for 40% of the damage dealt.
-* **Skill 1 (`K` / `X`)**: **Jackal Claws** — A low shadow sweep that shreds the opponent and inflicts lingering decay curse damage.
-* **Skill 2 (`L` / `C`)**: **Tomb Quicksand** — Opens a swirling vortex of underworld sand beneath the opponent that slows, grounds, and damages them.
-* **Ultimate (`U` / `V`)**: **Judgment of Ma'at** — Summons the golden Scales of Truth; reaps the opponent's soul, dealing massive true damage and restoring Anubis's health.
-* **Passive — *Soul Siphon Aura***: Restores 25% of all damage dealt directly back into Anubis's health pool.
+## 🎮 Controls Guide
+
+| Action | Player 1 (Solo / Versus) | Player 2 (Local PvP) | Mobile / Touch Virtual Controller |
+|:---|:---:|:---:|:---:|
+| **3D Movement** | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> | <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> | <kbd>▲</kbd> <kbd>▼</kbd> <kbd>◀</kbd> <kbd>▶</kbd> (3D D-Pad) |
+| **Jump** | <kbd>Space</kbd> | <kbd>Numpad 0</kbd> | <kbd>⚡ JUMP</kbd> |
+| **Guard / Block** | <kbd>Shift</kbd> | <kbd>Numpad .</kbd> | <kbd>S</kbd> (GUARD) |
+| **Basic Attack** | <kbd>J</kbd> or <kbd>Z</kbd> | <kbd>Numpad 1</kbd> or <kbd>1</kbd> | <kbd>J</kbd> (ATK) |
+| **Skill 1** | <kbd>K</kbd> or <kbd>X</kbd> | <kbd>Numpad 2</kbd> or <kbd>2</kbd> | <kbd>K</kbd> (SKILL 1) |
+| **Skill 2** | <kbd>L</kbd> or <kbd>C</kbd> | <kbd>Numpad 3</kbd> or <kbd>3</kbd> | <kbd>L</kbd> (SKILL 2) |
+| **Ultimate (100 Energy)** | <kbd>U</kbd> | <kbd>Numpad 5</kbd> or <kbd>5</kbd> | <kbd>U</kbd> (ULT) |
+| **Toggle 3D Camera** | <kbd>V</kbd> | <kbd>V</kbd> | <kbd>🎥</kbd> (CAM) |
+| **Pause Match** | <kbd>Esc</kbd> or <kbd>P</kbd> | <kbd>Esc</kbd> | <kbd>⏸</kbd> (PAUSE) |
 
 ---
 
-### 4. 🐵 Sun Wukong — *The Great Sage Heaven's Equal* (3,800 Points)
-> The mythical Monkey King with 72 earthly transformations and the legendary Ruyi staff.
-* **Basic Attack (`J` / `Z`)**: **Ruyi Expansion** — Thrusts his golden staff, extending it dynamically across 70% of the arena with heavy knockback.
-* **Skill 1 (`K` / `X`)**: **Nimbus Somersault** — Flips high into the air on a golden cloud before crashing down with a downward staff slam.
-* **Skill 2 (`L` / `C`)**: **Hair Clone Decoy** — Leaves a fighting shadow clone while Wukong dashes unseen behind the enemy.
-* **Ultimate (`U` / `V`)**: **Heaven Havoc (72 Styles)** — Summons three illusionary clones that converge from all angles in a synchronized frenzy.
-* **Passive — *Immortal Stone Body***: Immune to flinching or knockback while executing attacks, plus constant 1.5% max HP regeneration every 2 seconds.
+## 🚀 How to Run
+
+### Option 1: Quick Launch
+Double-click `play_game.bat` in the repository root to launch immediately in your default browser.
+
+### Option 2: Browser
+Open `index.html` in any modern web browser (Chrome, Edge, Firefox, Safari).
+* Works 100% offline via local `js/lib/three.min.js` and includes automatic CDN fallback!
 
 ---
 
-### 5. ⛩️ Ryomen Sukuna — *King of Curses* (5,500 Points)
-> The undisputed calamity god of jujutsu, cutting all existence into ribbons.
-* **Basic Attack (`J` / `Z`)**: **Dismantle (Kai)** — Fires swift, invisible flying spatial slashes in an X-pattern.
-* **Skill 1 (`K` / `X`)**: **Cleave (Hachi)** — Teleports directly in front of the enemy, grabbing them and executing an armor-piercing slash scaled to the opponent's maximum HP.
-* **Skill 2 (`L` / `C`)**: **Fuga (Divine Flame Arrow)** — Draws and shoots a thermal fire arrow that triggers an incinerating explosion upon impact.
-* **Ultimate (`U` / `V`)**: **Malevolent Shrine (Fukuma Mizushi)** — Expands an open barrier domain; blood moon rises and relentless slashes carve the entire arena for 3.5 seconds.
-* **Passive — *Reverse Cursed Technique***: Critical strikes and special attacks restore 20% of damage dealt when under 40% HP.
+## 📦 Project Architecture
 
----
-
-## 🕹️ Controls
-
-### Player 1 (Default / Solo)
-| Action | Keybinding |
-|---|---|
-| **Move Left / Right** | `A` / `D` |
-| **Jump** | `W` or `Space` |
-| **Block / Guard** | `S` |
-| **Basic Attack** | `J` or `Z` |
-| **Skill 1** | `K` or `X` |
-| **Skill 2** | `L` or `C` |
-| **Ultimate (100 Energy)** | `U` or `V` |
-| **Pause** | `Escape` or `P` |
-
-### Player 2 (Local PvP)
-| Action | Keybinding |
-|---|---|
-| **Move Left / Right** | `←` / `→` (Arrow Keys) |
-| **Jump** | `↑` (Up Arrow) |
-| **Block / Guard** | `↓` (Down Arrow) |
-| **Basic Attack** | `Numpad 1` or `1` |
-| **Skill 1** | `Numpad 2` or `2` |
-| **Skill 2** | `Numpad 3` or `3` |
-| **Ultimate** | `Numpad 5` or `5` / `0` |
-
----
-
-## 🪙 Economy & In-Game Points
-
-* **Starter Points**: New players start with **0 Battle Points** (Start strictly at 0 coins; earn all points through combat!).
-* **Earn Points**:
-  * Match Victory: **300 – 600 Points** (scales with difficulty: Easy, Medium, Hard, Deity).
-  * Combo Bonuses: Up to **+200 Points** for high hit chains.
-  * Time Bonus: Bonus points for finishing rounds fast.
-* **Persistent Save**: Points, unlocked deities, and match records are saved automatically to `localStorage`.
-* **Fair Economy**: Points are earned strictly through skill in combat, tournament ladders, and combo execution (no cheat exploits).
-
----
-
-## 🚀 How to Run Locally
-
-No external build tools or installations are required! Simply:
-
-1. Clone or download this repository:
-   ```bash
-   git clone https://github.com/<your-username>/battle-arena-clashofgods.git
-   cd battle-arena-clashofgods
-   ```
-2. Open `index.html` directly in any modern web browser (Chrome, Edge, Firefox, Brave, Safari).
-3. (Optional) Run via a local web server:
-   ```bash
-   # Python 3
-   python -m http.server 8000
-   ```
-   Then open `http://localhost:8000`.
-
----
-
-## 🌟 Built With
-* **HTML5 Canvas**: 60 FPS smooth rendering with dynamic letterbox scaling.
-* **Web Audio API**: Procedural sound effects and synthesizer (zero external audio file dependency).
-* **Vanilla JavaScript (ES6+)**: Modular physics, particle effects, and AI state machines.
-* **CSS3 Flexbox & Grid**: Responsive arcade-styled UI with glowing cyberpunk/mythic aesthetics.
+```
+battle-arena-clash-of-sorcerors/
+├── index.html            # Main HTML5 layout, UI screens & overlays
+├── css/
+│   └── style.css         # Cyberpunk/Arcade UI stylesheet & touch controller styles
+├── js/
+│   ├── lib/
+│   │   └── three.min.js  # Local Three.js WebGL 3D engine (offline supported)
+│   ├── character3d.js    # Procedural 3D character rigging, materials & animations
+│   ├── world3d.js        # Open world 3D terrain, landmarks, lighting & live domains
+│   ├── characters.js     # Character stats, move lore, power levels & passives
+│   ├── fighter.js        # 3D Fighter physics, spatial hitboxes & state machine
+│   ├── ai.js             # 3D combat AI with flanking, dodging & tactical ranging
+│   ├── game.js           # Master 3D game loop, dynamic camera & 2D arcade HUD
+│   ├── particles.js      # 3D-to-screen projected combat text, shockwaves & sparks
+│   ├── audio.js          # Procedural Web Audio API sound effects & BGM
+│   └── ui.js             # UI state manager, 3D character select preview & shop
+├── play_game.bat         # One-click desktop launcher
+└── README.md             # Documentation
+```

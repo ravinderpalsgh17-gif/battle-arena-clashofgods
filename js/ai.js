@@ -1,19 +1,19 @@
-// Intelligent Combat AI Controller for Battle Arena: Clash of Gods
-// Supports Easy, Medium, Hard, and Deity difficulty modes
+// Intelligent 3D Combat AI Controller for Battle Arena: Clash of Sorcerors
+// Supports 3D Open World Flanking, Dodging, Tactical Ranging, and 16 JJK Playstyles
 
 class AIController {
     constructor(fighter, difficulty = 'medium') {
         this.fighter = fighter;
         this.difficulty = difficulty;
         this.decisionTimer = 0;
-        this.actionQueue = null;
+        this.strafeDirection = Math.random() < 0.5 ? 1 : -1;
+        this.strafeTimer = 0;
 
-        // Configuration based on difficulty
         const configs = {
-            easy: { reactionDelay: 25, blockChance: 0.15, aggressiveChance: 0.40, comboSkill: 0.25 },
-            medium: { reactionDelay: 15, blockChance: 0.45, aggressiveChance: 0.65, comboSkill: 0.55 },
-            hard: { reactionDelay: 8, blockChance: 0.70, aggressiveChance: 0.82, comboSkill: 0.85 },
-            deity: { reactionDelay: 4, blockChance: 0.90, aggressiveChance: 0.95, comboSkill: 0.98 }
+            easy: { reactionDelay: 22, blockChance: 0.15, aggressiveChance: 0.40, strafeSpeed: 0.4 },
+            medium: { reactionDelay: 14, blockChance: 0.45, aggressiveChance: 0.65, strafeSpeed: 0.7 },
+            hard: { reactionDelay: 7, blockChance: 0.70, aggressiveChance: 0.82, strafeSpeed: 1.0 },
+            deity: { reactionDelay: 3, blockChance: 0.90, aggressiveChance: 0.95, strafeSpeed: 1.2 }
         };
 
         this.cfg = configs[difficulty] || configs.medium;
@@ -22,10 +22,10 @@ class AIController {
     setDifficulty(diff) {
         this.difficulty = diff;
         const configs = {
-            easy: { reactionDelay: 25, blockChance: 0.15, aggressiveChance: 0.40, comboSkill: 0.25 },
-            medium: { reactionDelay: 15, blockChance: 0.45, aggressiveChance: 0.65, comboSkill: 0.55 },
-            hard: { reactionDelay: 8, blockChance: 0.70, aggressiveChance: 0.82, comboSkill: 0.85 },
-            deity: { reactionDelay: 4, blockChance: 0.90, aggressiveChance: 0.95, comboSkill: 0.98 }
+            easy: { reactionDelay: 22, blockChance: 0.15, aggressiveChance: 0.40, strafeSpeed: 0.4 },
+            medium: { reactionDelay: 14, blockChance: 0.45, aggressiveChance: 0.65, strafeSpeed: 0.7 },
+            hard: { reactionDelay: 7, blockChance: 0.70, aggressiveChance: 0.82, strafeSpeed: 1.0 },
+            deity: { reactionDelay: 3, blockChance: 0.90, aggressiveChance: 0.95, strafeSpeed: 1.2 }
         };
         this.cfg = configs[diff] || configs.medium;
     }
@@ -33,7 +33,7 @@ class AIController {
     update() {
         const f = this.fighter;
         const opp = f.opponent;
-        if (!opp || f.state === 'dead') return;
+        if (!opp || f.state === 'dead' || !f.canAct()) return;
 
         this.decisionTimer++;
         if (this.decisionTimer < this.cfg.reactionDelay) {
@@ -41,16 +41,22 @@ class AIController {
         }
         this.decisionTimer = 0;
 
-        const dist = Math.abs(opp.x - f.x);
+        const dx = opp.x - f.x;
+        const dz = opp.z - f.z;
+        const dist = Math.hypot(dx, dz);
+
+        // Always face towards opponent in 3D
+        f.turnTowards(opp.x, opp.z);
+
         const oppIsAttacking = ['attack1', 'attack2', 'attack3', 'ultimate'].includes(opp.state);
 
-        // 1. Defensive reaction: Block or Jump if opponent is attacking nearby
-        if (oppIsAttacking && dist < 220) {
+        // 1. Defensive reaction in 3D: Block, Jump, or Side-step Dodge
+        if (oppIsAttacking && dist < 7.5) {
             if (Math.random() < this.cfg.blockChance) {
                 f.startBlock();
                 setTimeout(() => {
                     if (f && f.state === 'block') f.stopBlock();
-                }, 350 + Math.random() * 250);
+                }, 300 + Math.random() * 250);
                 return;
             } else if (Math.random() < 0.35 && f.isGrounded) {
                 f.jump();
@@ -60,114 +66,136 @@ class AIController {
             f.stopBlock();
         }
 
-        // 2. Ultimate Execution: If 100 energy, unleash God Finisher!
+        // 2. Ultimate / Domain Execution: If 100 energy or Jackpot ready
         if (f.energy >= 100 && f.cooldowns.ultimate === 0) {
-            if (f.charKey === 'sukuna' || f.charKey === 'zeus' || dist < 320) {
+            if (['gojo', 'sukuna', 'yuta', 'hakari', 'jogo', 'mahito'].includes(f.charKey) || dist < 12.0) {
                 f.triggerUltimate();
                 return;
             }
         }
 
-        // 3. Character-Specific Tactical Playstyles
-
-        // A. ZEUS: Zoner / Spacing
-        if (f.charKey === 'zeus') {
-            if (dist < 120 && f.cooldowns.skill2 === 0 && f.energy >= 35) {
-                f.triggerSkill2(); // Aegis Storm defensive shield
+        // 3. Character-Specific Tactical Playstyles in 3D
+        if (f.charKey === 'gojo') {
+            if (dist > 12.0 && f.cooldowns.skill1 === 0 && f.energy >= 30) {
+                f.triggerSkill1(); // Reversal Red
                 return;
             }
-            if (dist > 300 && f.cooldowns.basic === 0) {
-                f.triggerBasicAttack(); // Thunder Lance beam
+            if (dist > 7.0 && f.cooldowns.skill2 === 0 && f.energy >= 35 && Math.random() < 0.6) {
+                f.triggerSkill2(); // Teleport strike
                 return;
             }
-            if (dist > 180 && f.cooldowns.skill1 === 0 && f.energy >= 25) {
-                f.triggerSkill1(); // Chain Spark
+            if (dist <= 5.0 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack(); // Lapse Blue melee
                 return;
             }
-            // Maintain mid-to-long distance
-            if (dist < 180 && Math.random() < 0.6) {
-                if (f.x < opp.x) f.moveLeft(); else f.moveRight();
+        } else if (f.charKey === 'sukuna') {
+            if (dist > 10.0 && f.cooldowns.skill2 === 0 && f.energy >= 45 && Math.random() < 0.7) {
+                f.triggerSkill2(); // Fuga flame arrow
+                return;
+            }
+            if (dist > 6.0 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack(); // Dismantle
+                return;
+            }
+            if (dist <= 5.0 && f.cooldowns.skill1 === 0 && f.energy >= 30) {
+                f.triggerSkill1(); // Cleave
+                return;
+            }
+        } else if (f.charKey === 'yuta') {
+            if (dist > 7.0 && f.cooldowns.skill1 === 0 && f.energy >= 30 && Math.random() < 0.75) {
+                f.triggerSkill1(); // Cursed Speech
+                return;
+            }
+            if (dist <= 6.0 && f.cooldowns.skill2 === 0 && f.energy >= 40) {
+                f.triggerSkill2(); // Rika Smash
+                return;
+            }
+            if (dist <= 4.5 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack();
+                return;
+            }
+        } else if (f.charKey === 'toji') {
+            if (dist > 8.0 && f.cooldowns.skill1 === 0 && f.energy >= 20) {
+                f.triggerSkill1();
+                return;
+            }
+            if (dist <= 5.5 && f.cooldowns.skill2 === 0 && f.energy >= 35) {
+                f.triggerSkill2();
+                return;
+            }
+            if (dist <= 4.5 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack();
+                return;
+            }
+        } else if (f.charKey === 'nobara') {
+            if (dist > 6.0 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack(); // Cursed Nails
+                return;
+            }
+            if (dist > 5.0 && f.cooldowns.skill1 === 0 && f.energy >= 25) {
+                f.triggerSkill1(); // Hairpin
+                return;
+            }
+            if (dist <= 4.5 && f.cooldowns.skill2 === 0 && f.energy >= 30) {
+                f.triggerSkill2(); // Hammer Smash
+                return;
+            }
+        } else if (f.charKey === 'megumi') {
+            if (dist > 8.0 && f.cooldowns.skill1 === 0 && f.energy >= 25) {
+                f.triggerSkill1(); // Nue Lightning
+                return;
+            }
+            if (dist <= 4.5 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack(); // Divine Dog Totality
+                return;
+            }
+        } else if (f.charKey === 'todo') {
+            if (dist > 8.0 && f.cooldowns.skill2 === 0 && f.energy >= 35 && Math.random() < 0.8) {
+                f.triggerSkill2(); // Boogie Woogie swap
+                return;
+            }
+            if (dist <= 4.8 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack();
+                return;
+            }
+        } else {
+            // General 3D Combat Behavior
+            if (dist <= 4.5 && f.cooldowns.basic === 0) {
+                f.triggerBasicAttack();
+                return;
+            } else if (dist <= 5.5 && f.cooldowns.skill1 === 0 && f.energy >= 25) {
+                f.triggerSkill1();
+                return;
+            } else if (dist <= 6.0 && f.cooldowns.skill2 === 0 && f.energy >= 35) {
+                f.triggerSkill2();
                 return;
             }
         }
 
-        // B. YUJI: Aggressive Rushdown
-        if (f.charKey === 'yuji') {
-            if (dist > 200 && f.cooldowns.skill1 === 0 && f.energy >= 20 && Math.random() < this.cfg.aggressiveChance) {
-                f.triggerSkill1(); // Cursed Rush forward gap-closer
-                return;
-            }
-            if (dist <= 85) {
-                if (Math.random() < 0.65) {
-                    f.triggerBasicAttack(); // Divergent Fist
-                } else if (f.cooldowns.skill2 === 0 && f.energy >= 35) {
-                    f.triggerSkill2(); // Slaughter Demon
-                }
-                return;
-            }
+        // 4. 3D Open World Navigation: Approach & Flanking Orbit
+        this.strafeTimer++;
+        if (this.strafeTimer > 40) {
+            this.strafeTimer = 0;
+            if (Math.random() < 0.4) this.strafeDirection *= -1;
         }
 
-        // C. ANUBIS: Life Drain & Hexes
-        if (f.charKey === 'anubis') {
-            if (f.hp < f.maxHp * 0.7 && f.cooldowns.basic === 0) {
-                f.triggerBasicAttack(); // Soul Siphon healing orb
-                return;
-            }
-            if (dist > 160 && f.cooldowns.skill2 === 0 && f.energy >= 30) {
-                f.triggerSkill2(); // Quicksand trap under enemy
-                return;
-            }
-            if (dist <= 130 && f.cooldowns.skill1 === 0 && f.energy >= 20) {
-                f.triggerSkill1(); // Jackal Claws shadow leap
-                return;
-            }
-        }
+        if (dist > 4.5) {
+            // Move towards opponent with a subtle 3D strafe flank
+            const normX = dx / dist;
+            const normZ = dz / dist;
 
-        // D. WUKONG: High Mobility & Clones
-        if (f.charKey === 'wukong') {
-            if (dist > 220 && f.cooldowns.basic === 0) {
-                f.triggerBasicAttack(); // Staff Extension across arena
-                return;
-            }
-            if (dist > 150 && f.cooldowns.skill1 === 0 && f.energy >= 25 && Math.random() < 0.7) {
-                f.triggerSkill1(); // Nimbus Somersault
-                return;
-            }
-            if (dist <= 150 && f.cooldowns.skill2 === 0 && f.energy >= 30 && Math.random() < 0.5) {
-                f.triggerSkill2(); // Hair Clone Decoy
-                return;
-            }
-        }
+            // Perpendicular vector for strafing
+            const perpX = -normZ * this.strafeDirection * 0.45;
+            const perpZ = normX * this.strafeDirection * 0.45;
 
-        // E. SUKUNA: Calamity Slashes & Explosions
-        if (f.charKey === 'sukuna') {
-            if (dist > 260 && f.cooldowns.skill2 === 0 && f.energy >= 45 && Math.random() < 0.65) {
-                f.triggerSkill2(); // Fuga fire arrow
-                return;
-            }
-            if (dist > 180 && f.cooldowns.basic === 0) {
-                f.triggerBasicAttack(); // Dismantle invisible flying cut
-                return;
-            }
-            if (dist <= 120 && f.cooldowns.skill1 === 0 && f.energy >= 30) {
-                f.triggerSkill1(); // Cleave head grab
-                return;
-            }
-        }
+            f.move3D(normX + perpX, normZ + perpZ);
 
-        // 4. Movement: Advance towards or jump over
-        if (dist > 100) {
-            if (opp.x > f.x) {
-                f.moveRight();
-            } else {
-                f.moveLeft();
-            }
-            if (Math.random() < 0.12 && f.isGrounded) {
+            if (Math.random() < 0.08 && f.isGrounded) {
                 f.jump();
             }
         } else {
+            // In close combat range
             f.stopMoving();
-            // Close-range basic trading
             if (f.cooldowns.basic === 0) {
                 f.triggerBasicAttack();
             }

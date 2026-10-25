@@ -1,5 +1,5 @@
 // UI Manager: Menus, Character Selection, Shop, Move List & Overlays
-// Battle Arena: Clash of Gods
+// Battle Arena: Clash of Sorcerors
 
 class UIManager {
     constructor() {
@@ -24,6 +24,9 @@ class UIManager {
         this.moveListModal = document.getElementById('moveListModal');
 
         this.pointsElements = document.querySelectorAll('.points-val');
+        this.touchControls = document.getElementById('touchControls');
+        this.btnTouchU = document.getElementById('btnTouchU');
+        this.btnToggleTouch = document.getElementById('btnToggleTouch');
     }
 
     bindEvents() {
@@ -74,6 +77,14 @@ class UIManager {
             if (btn) btn.textContent = muted ? '🔇 Sound: OFF' : '🔊 Sound: ON';
         });
 
+        // 3D Camera View Toggle
+        document.getElementById('btnToggleCam')?.addEventListener('click', () => {
+            Sound.playClick();
+            if (window.GameInstance) {
+                window.GameInstance.cycleCameraMode();
+            }
+        });
+
         // Pause Menu buttons
         document.getElementById('btnResume')?.addEventListener('click', () => {
             Sound.playClick();
@@ -118,6 +129,7 @@ class UIManager {
         // Back from Char Select
         document.getElementById('btnCharSelectBack')?.addEventListener('click', () => {
             Sound.playClick();
+            if (window.GameInstance && window.GameInstance.showPreview3D) window.GameInstance.showPreview3D('sukuna');
             this.charSelectScreen.classList.add('hidden');
             this.menuScreen.classList.remove('hidden');
         });
@@ -128,6 +140,19 @@ class UIManager {
             this.shopScreen.classList.add('hidden');
             this.menuScreen.classList.remove('hidden');
         });
+
+        // Reset Points to 0
+        document.getElementById('btnResetPoints')?.addEventListener('click', () => {
+            if (confirm('Reset your coins/points balance to 0?')) {
+                StorageManager.resetPoints();
+                this.updatePointsDisplay();
+                this.renderCharCards();
+                this.renderShopCards();
+            }
+        });
+
+        // Initialize Virtual Arcade Touch Controls
+        this.initTouchControls();
     }
 
     updatePointsDisplay() {
@@ -141,12 +166,20 @@ class UIManager {
         if (window.GameInstance) {
             window.GameInstance.state = 'menu';
             window.GameInstance.sound.stopBGM();
+            if (window.GameInstance.p1) window.GameInstance.p1.cleanup();
+            if (window.GameInstance.p2) window.GameInstance.p2.cleanup();
+            window.GameInstance.clearProjectiles();
+            if (window.GameInstance.world3d) window.GameInstance.world3d.clearDomain();
+            if (window.GameInstance.showPreview3D) window.GameInstance.showPreview3D('sukuna');
         }
         this.pauseOverlay.classList.add('hidden');
         this.gameOverOverlay.classList.add('hidden');
         this.charSelectScreen.classList.add('hidden');
         this.shopScreen.classList.add('hidden');
         this.hudOverlay.classList.add('hidden');
+        if (this.touchControls) {
+            this.touchControls.classList.add('hidden');
+        }
         this.menuScreen.classList.remove('hidden');
         this.updatePointsDisplay();
     }
@@ -191,7 +224,7 @@ class UIManager {
                 </div>
                 <div class="char-card-info">
                     <div class="char-card-name">${char.name}</div>
-                    <div class="char-card-title" style="color: ${char.color}">${char.title}</div>
+                    <div class="char-card-title" style="color: ${char.color}"><strong>${char.grade || ""}</strong> &bull; ${char.title}</div>
                     <div class="char-card-status">
                         ${unlocked ? '<span class="status-unlocked">UNLOCKED</span>' : `<span class="status-locked">🔒 ${char.cost} PTS</span>`}
                     </div>
@@ -211,6 +244,11 @@ class UIManager {
         document.querySelectorAll('.char-card').forEach(c => c.classList.remove('active'));
         const activeCard = document.getElementById(`card-${key}`);
         if (activeCard) activeCard.classList.add('active');
+
+        // Show live 3D preview model in 3D Arena
+        if (window.GameInstance && window.GameInstance.showPreview3D) {
+            window.GameInstance.showPreview3D(key);
+        }
 
         const char = CHARACTERS_DATA[key];
         const unlocked = StorageManager.isUnlocked(key);
@@ -234,7 +272,7 @@ class UIManager {
         previewContainer.innerHTML = `
             <div class="preview-header">
                 <h2 style="color: ${char.color}">${char.name}</h2>
-                <div class="preview-title">${char.title}</div>
+                <div class="preview-title"><strong>${char.grade || ""}</strong> &bull; ${char.title}</div>
                 <p class="preview-tagline">${char.tagline}</p>
             </div>
 
@@ -283,11 +321,11 @@ class UIManager {
                         this.selectedP2Char = window.GameInstance.arcadeLadder[0];
                         this.launchGame();
                     } else if (this.currentMode === 'training') {
-                        this.selectedP2Char = (key === 'sukuna') ? 'yuji' : 'sukuna';
+                        this.selectedP2Char = (key === 'sukuna') ? 'gojo' : ((key === 'gojo') ? 'sukuna' : 'sukuna');
                         this.launchGame();
                     } else {
                         // Versus AI: pick random unlocked or default opponent
-                        this.selectedP2Char = (key === 'sukuna') ? 'yuji' : 'sukuna';
+                        this.selectedP2Char = (key === 'sukuna') ? 'gojo' : ((key === 'gojo') ? 'sukuna' : 'sukuna');
                         this.launchGame();
                     }
                 } else {
@@ -313,6 +351,9 @@ class UIManager {
     launchGame() {
         this.charSelectScreen.classList.add('hidden');
         this.hudOverlay.classList.remove('hidden');
+        if (this.touchControls && this.touchEnabled) {
+            this.touchControls.classList.remove('hidden');
+        }
         window.GameInstance.startMatch(this.selectedP1Char, this.selectedP2Char, this.currentMode, this.currentDifficulty);
     }
 
@@ -346,7 +387,7 @@ class UIManager {
                     ${unlocked ? 'OWNED' : `🪙 ${char.cost} PTS`}
                 </div>
                 <h3 style="color: ${char.color}">${char.name}</h3>
-                <div class="shop-title">${char.title}</div>
+                <div class="shop-title"><strong>${char.grade || ""}</strong> &bull; ${char.title}</div>
                 <p class="shop-tagline">${char.tagline}</p>
                 <div class="shop-ultimate">
                     <strong>Ultimate:</strong> ${char.attacks.ultimate.name}
@@ -441,12 +482,15 @@ class UIManager {
     showPause(show = true) {
         if (show) {
             this.pauseOverlay.classList.remove('hidden');
+            if (this.touchControls) this.touchControls.classList.add('hidden');
         } else {
             this.pauseOverlay.classList.add('hidden');
+            if (this.touchControls && this.touchEnabled) this.touchControls.classList.remove('hidden');
         }
     }
 
     showGameOver(p1Won, points, p1Rounds, p2Rounds, arcadeIdx) {
+        if (this.touchControls) this.touchControls.classList.add('hidden');
         this.gameOverOverlay.classList.remove('hidden');
         const titleEl = document.getElementById('gameOverTitle');
         const pointsEl = document.getElementById('gameOverPoints');
@@ -478,6 +522,194 @@ class UIManager {
         }
 
         this.updatePointsDisplay();
+    }
+
+    // ----------------------------------------------------
+    // VIRTUAL ARCADE TOUCH CONTROLS (U, K, L, J, S, D-Pad)
+    // ----------------------------------------------------
+    initTouchControls() {
+        if (!this.touchControls) return;
+
+        this.updateTouchToggleButton();
+
+        this.btnToggleTouch?.addEventListener('click', () => {
+            Sound.playClick();
+            this.touchEnabled = !this.touchEnabled;
+            localStorage.setItem('battle_arena_touch_enabled', this.touchEnabled ? 'true' : 'false');
+            this.updateTouchToggleButton();
+            if (window.GameInstance && window.GameInstance.state === 'fighting') {
+                this.touchControls.classList.toggle('hidden', !this.touchEnabled);
+            }
+        });
+
+        // Helper to bind tactile multi-touch pointer events with pointer capture
+        const bindKey = (btnId, onDown, onUp) => {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+
+            let activeId = null;
+
+            btn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeId !== null) return;
+                activeId = e.pointerId;
+                try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+                btn.classList.add('touch-active');
+                if (window.GameInstance && window.GameInstance.sound) {
+                    window.GameInstance.sound.resume();
+                }
+                if (onDown) onDown();
+            }, { passive: false });
+
+            const release = (e) => {
+                if (e.pointerId !== activeId) return;
+                e.preventDefault();
+                e.stopPropagation();
+                activeId = null;
+                try { btn.releasePointerCapture(e.pointerId); } catch (_) {}
+                btn.classList.remove('touch-active');
+                if (onUp) onUp();
+            };
+
+            btn.addEventListener('pointerup', release, { passive: false });
+            btn.addEventListener('pointercancel', release, { passive: false });
+        };
+
+        // 3D Navigation: Forward (KeyW)
+        bindKey('btnTouchUp',
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyW'] = true;
+                }
+            },
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyW'] = false;
+                }
+            }
+        );
+
+        // 3D Navigation: Backward (KeyS)
+        bindKey('btnTouchDown',
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyS'] = true;
+                }
+            },
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyS'] = false;
+                }
+            }
+        );
+
+        // Move Left (KeyA)
+        bindKey('btnTouchLeft',
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyA'] = true;
+                }
+            },
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyA'] = false;
+                }
+            }
+        );
+
+        // Move Right (KeyD)
+        bindKey('btnTouchRight',
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyD'] = true;
+                }
+            },
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyD'] = false;
+                }
+            }
+        );
+
+        // Camera Toggle
+        bindKey('btnTouchCam', () => {
+            if (window.GameInstance) {
+                window.GameInstance.cycleCameraMode();
+            }
+        });
+
+        // Jump (KeyW / Space)
+        bindKey('btnTouchJump', () => {
+            if (window.GameInstance && window.GameInstance.p1) {
+                window.GameInstance.p1.jump();
+            }
+        });
+
+        // Guard / Block (KeyS)
+        bindKey('btnTouchS',
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyS'] = true;
+                    if (window.GameInstance.p1) window.GameInstance.p1.startBlock();
+                }
+            },
+            () => {
+                if (window.GameInstance) {
+                    window.GameInstance.keys['KeyS'] = false;
+                    if (window.GameInstance.p1) window.GameInstance.p1.stopBlock();
+                }
+            }
+        );
+
+        // Basic Attack (KeyJ)
+        bindKey('btnTouchJ', () => {
+            if (window.GameInstance && window.GameInstance.p1) {
+                window.GameInstance.p1.triggerBasicAttack();
+            }
+        });
+
+        // Skill 1 (KeyK)
+        bindKey('btnTouchK', () => {
+            if (window.GameInstance && window.GameInstance.p1) {
+                window.GameInstance.p1.triggerSkill1();
+            }
+        });
+
+        // Skill 2 (KeyL)
+        bindKey('btnTouchL', () => {
+            if (window.GameInstance && window.GameInstance.p1) {
+                window.GameInstance.p1.triggerSkill2();
+            }
+        });
+
+        // Ultimate (KeyU)
+        bindKey('btnTouchU', () => {
+            if (window.GameInstance && window.GameInstance.p1) {
+                window.GameInstance.p1.triggerUltimate();
+            }
+        });
+
+        // Mobile Pause Button
+        bindKey('btnTouchPause', () => {
+            if (window.GameInstance) {
+                window.GameInstance.togglePause();
+            }
+        });
+    }
+
+    updateTouchToggleButton() {
+        if (!this.btnToggleTouch) return;
+        this.btnToggleTouch.textContent = this.touchEnabled ? '📱 Touch: ON' : '📱 Touch: OFF';
+    }
+
+    updateTouchHUD(p1) {
+        if (!this.btnTouchU || !p1) return;
+        if (p1.energy >= 100 && p1.cooldowns.ultimate <= 0) {
+            this.btnTouchU.classList.add('ultimate-ready');
+        } else {
+            this.btnTouchU.classList.remove('ultimate-ready');
+        }
     }
 }
 
